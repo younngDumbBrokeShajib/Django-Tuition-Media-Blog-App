@@ -1,0 +1,33 @@
+{% extends "basic.html" %}
+{% block body %}
+<div class="container">
+<h1 class="text-center">Post Detail view</h1>
+    <div class="col-md-6">
+        <img src="{{object.image.url}}" style="width:250px; height:250px" class="rounded-circle">
+
+    </div>
+ <div class="col-md-8 offset-md-2"></div>
+Title: {{object.title}}<br>
+
+    <!-- addint the condition who can edit the post-->
+{% if author %}
+    <a href="/tuition/edit/{{object.id}}">Edit</a> <br>
+    <a href="/tuition/delete/{{object.id}}">Delete</a>
+{% endif %}
+        <br>
+
+
+
+Author: {{object.user.username}} <br>
+Subject: {% for i in object.subject.all%} {{i.name}},{% endfor %} <br>
+Class: {% for i in object.class_in.all%} {{i.name}}({{i.section}}) {% endfor%} <br>
+Category: {{object.category}} <br>
+Medium: {{object.medium}}<br>
+    </div>
+</div>
+{% endblock body %}
+
+<!-- here subject is the another model which is related to M2M so first first we get the post then the subjects for
+that related post. Since there are multiple objects of the choosen subject model so fetch all the subjects of the post
+using for loop. and we only get the name of the subject here.
+this is same for Class

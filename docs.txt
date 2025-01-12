@@ -1,0 +1,271 @@
+uploading an image through model:
+add media_root and media_url inside settings.py
+in the base urls.py add static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) with + of the urls
+import static and settings in the urls.py to use media_root
+
+saving the values from the front-end to model:
+work in views.py  after creating the necessary fields in model.py
+use if method==POST
+get the values of the html field by name=request.POST[html field name]
+after all the fetching all the values in the variables create an object of the model and then save inside of the views
+exp: obj=Contact(model_class_varr=views_class_varr_for_html_field)
+obj.save()
+-----Saving from model form to database------
+use the earlier created model class => Posts
+create a postform class inside forms.py
+use class Meta to get the model fields and use exclude for which of the model class field we dont need
+for many2many relation use widgets for which class will be used for many2many relation with post model class ->
+widgets={
+            'subject':forms.CheckboxSelectMultiple(attrs={
+                'multiple':True,
+            }),
+Then work on views.py for saving the values:
+check if method==POST then create an object named "form" of type Postfrom(request.POST,request.FILES) request.FILES is needed for file type of input
+check if form is valid-> form.is_valid()
+then create another object of form(commit==false) and then save use this to save the values in database from form html field
+then return-> render with context and
+
+
+
+
+---------------------------------------------------------------------------------
+----------------------One to Many relation----------------------
+a user will have many posts.
+use foreign key.(inside of the parameter we use the model we want to set 12many relation with here its user model related to post model)
+so that user=models.ForeignKey(User) here User model will be linked to many different posts.
+so user variable for the posts is used here
+
+since we have already added few posts so use null=True and blank=True
+on_delete=models.CASCADE-> will delete the post if the user is deleted
+here in the project the views def is used as form class. and inside forms.py we have excluded the user field from the front end
+but can be found from the super admin panel
+-------------------------------Many 2 Many Relation--------------------------
+for this project we use subjects and class_in model class for every posts
+here many posts can have many subjects and class_in model realted to it
+now to show the form to add posts we use forms.py
+to show the m2m fields few things to add in forms.py->
+1. add widgets a dict type widgets={ 'subject':forms.chekcboxselectmultiple( attrs={'multiple'=True})
+} here inside the dict 'subject' is the post model's field name exact one.
+2. Do this for every model related to m2m relation.
+
+
+----------------# showing the post create form--------------------
+create a view def and check is method==post
+create an object of type form -> form=PostForm(request.POST,request.FILES)
+check if the form is valid-> if form.is_valid():
+now since we excluded the user field from the form so before saving use commit -> obj=form.save(commit=False)
+then add the user field by the link user was request-> obj.user=request.user
+now save the object obj.save()
+now in the front-end we need to use cleaned_data['html-field_name'] and save it to the obj.model_fieldname using the for loop
+
+
+------------------------------------------------------------------------
+
+
+------------------showing posts with only 1 type of subject (uses of RELATED NAME)----------
+a model class Subject has relation with Post class with related name='Subjects_set'
+now in views:
+create an object sub=Subject.objects.get(name='Maths') this will get the object of only type Maths
+now we need sub varr with related name which is used with Post model.
+so that we get all the Post object only having Subject Maths.
+-----------------------
+
+Pushing all the Objects saved in model into Front-end:
+create a new def of views with parameter(request)
+import the model in views
+get all the objects of the model -> post=Post.objects.all()
+pass the post varr as a dict with return render
+just return the render(request,'template_name,{'post':post})
+#now fetch the post varr passed in views use a for loop as {% for p in posts %} {{p.model_fields_name}} {%endfor%}
+
+------------Inside Post Model-------------
+Multiselectfield: install package django-multiselectfield
+then add the package inside installed apps settings.py
+before using it inside model class import that using import
+first create the choices of type tuple-> see the actual code in class
+then to use it for varr provide a default too.
+
+---------------Ussage of Template View(Class Based)-------------
+To use it create our homepage of our page
+import templateview-> views.py inside MainProject folder. since its a homepage.
+creat a class homeview(TemplateView) and add a class varr-> template_name="html file name"
+inside main project urls.py. create a new url
+import the template view created earlier
+use viewClassName.as_view() or TemplateView.as_view(template_name="homepage.html")
+to use TemplateView.as_view() need to import django.views.generic import TemplateView
+#now we can send data from this class based view to the front end
+to do so use context variable inside the class. And this context varr is tye of DICT and can add
+valued to the keys using context['key_name']='value'.  but we return the context varr yet to access
+the datas from context use the 'key_name'
+
+-----------------Usage of Class based view--------------
+We can use the same views class for different form and in different tmeplates.
+Say a views class for contact us is created earlier. Now use this for different contact from
+To use the same form views class create a new template html.
+and a new url just like the previous one but  with parameter form_name=contactForm2,template_name='contactform2.html'
+first create a another from in forms.py contactfrom2(forms.ModelForm)
+
+
+----------------Template View Class Based-----------------------
+this is django's generic view
+used in main project folder for HomePage
+import this in views.py django.views.generic import TemplateView
+inside class the parameter-> (Templateview) Class Homepage(TemplateView)
+inside the class add the template name and if needed use a getmethod.
+to use the class views inside urls.py it should be used as  'classname.as_view(),name='homepage' '
+to pass the few items using varr in the fron-end refer to the actual code
+
+----------------------------CreateView Class Based--------------------
+this is a generic class and has default classes and varr
+first inside the class pass the model name, template name, and form_class
+#If we need to have any custom behaviour then we use form_valid method.
+since not all the fields are inputed by used such as id and user_id for that reason a function of the parent class needs to be
+overridden to save the user related to the post
+for this def form_valid(self,form): here form.instance.user=self.request.user gets the user and to save that
+return super().form_valid(form). here we not calling the method inside itself rather the form_valid method of the parent class
+is getting called. we do this when we are done with our custom logic and let the rest of the work done by itself. by default class based CreateView's (form_valid method) handles the form validation
+and saves the inputed of the "POST" method by itself. So after adding our own logic we call the parent class form_valid method.
+if we have nothing to do with our own logic then we dont even have to specify the form_valid method
+just pass the required varr inside the class and boom dont even have to return or redirect like the function based views
+#------- why we used get_success_url method--------
+we need this method inside the createview class if we need to change the url after validation and saving the form
+to use it dynamically we use this. we use this if we need to go to detailView of after saving the form of the newly created object
+this will help us to send the post_id within the url and eveyrtime it changes when a new post is created
+
+
+
+---------------------------ListView Class Bases-----------------
+a class which send all the objects as a list in front-end
+inside class specify the template name, model name and by default it sends all the model objects in a varr-> object_list
+object_list can be use in for loop in html.
+to change the name and to catch all the objects in the front-end using for-loop use varr-> context_object_name="a_name"
+now to send data in the front-end use get_context_data() -> a built-in method which is used to send static data in front-
+#dynamic filtering er jonno> get_query_set() method. it will change as the url changes
+#just statically ekta filter chalanor jonno query_set varr is used
+example :
+def get_queryset(self):
+        # Get the last 10 posts based on the ID (most recent)
+        return Post.objects.all().order_by('-id')[:10]
+
+if needed of more dynamic filtering example:
+def get_queryset(self):
+        # You can add dynamic filtering here if needed
+        # Example: Filter posts by a specific category if 'category' is passed in the URL
+        category = self.request.GET.get('category')
+        if category:
+            return Post.objects.filter(category=category).order_by('-id')[:10]
+        return Post.objects.all().order_by('-id')[:10]
+
+# multiple query_set canbe used by using ' | ' operator.
+published_posts = Post.objects.filter(status='published').order_by('-id')[:10]
+draft_posts = Post.objects.filter(status='draft').order_by('-id')[:10]
+combined_queryset = published_posts | draft_posts
+return combined_queryset
+
+-------------------------------Post DetialView Class Based-----------------
+a generic class
+specify model name, template name, contect_object_name
+create a url for this view such as '/detial/<int:pk>',name='detail',
+here we tend to redirect to the detail page from ListView page.So in listview.html within ahref tag add
+the detialView url name inside of the href tag and the primary key of the model.
+<a href="/tuition/detail/{{i.id}}" here detail is the url name of the detailview and id is the primary key for the posts
+#refer to the detial.html comments for more info.
+
+-------------------------Post Update View Class Based-------------
+a generic view so import the updateview
+specify the model name, template and form_class
+to get the exact post through posts id we need to pass the exact id to update that.
+to do this use the get_success_url method
+inside the method get the post id by self.object,id
+then pass the id as a dict varr named kwargs within return reverse_lazy as key='pk' and value=id
+so now view is done add a url and add a button to edit the post through form
+###### ERROR/Bug solving#############
+in the detailview the authors passed as author(bool) varr from the edit view is not showing because
+we need to return the context data having author varr from the detialview too. also with the eidtview
+the author varr gives true if login_user==post_user
+
+
+---------------------------Post Delete View----------------
+import the generic djangoview inside views.py as DeleteView
+create a class PostDeleteView(DeleteView)
+pass the model name
+template name and the success_url=reverse_lazy('url')
+here while making the url pass the primary key just like eidtView.
+add the url delete link in the details.html. then create a new delete template
+
+----------------------------Form Design with indivdual fields without crispy forms--------------------
+
+remove cirspy after pipe(|) symbol
+usage of form's fields :
+form.as_p=> shows the fields as paragraph
+.as_table-> shows as tables
+.as_ul-> unordered list with bullet points
+## to use the individual fields with the label tag->
+label->form.field_name.label_tag and that related input field form.input_field_name
+then any field can be shows as crispy too-> use pipe(|) as_crispy_fields inside {{}}
+if we use crispy fields then we don't need to add the form.field_name.label_tag
+
+--------------Form design through MOdel Form class--------------------
+use the widgets(dict) for adding class and few more attributes with the fields
+use the labels(dict) for changing the label_tag of the model form.
+
+-----------------Setting initials in the form--------------
+to set initial from the views.py we use function based views
+inside the def a dict named initials={'field_name':'initial content/input'}
+pass this initials named dict as an argument while creating a obj inside def of that form class for both POST and GET method as
+form=ContactForm(request.POST, initial=initials)
+
+----------------Working of each/individual data of the FORM(Showing Error too)-------------------------
+A DATA GETTING FROM THE FORM CAN BE USED IN VARIOUS OPERATION INSIDE THE FORM CLASS
+NOT Inside the Meta class but inside the form class a method can be created.
+the method name should follow contrains like :
+############### def clean_mode_field_name(self): ################
+
+inside the method use the self.claened_data.get('model_field_name'). then save it in a varr
+then use the varr in varuious operation.
+#####showing ERROR while handling data has been submitted.
+use the saved value in a varr to split and call raise forms.ValidationError('Name cannot be more than 3 words')
+
+
+---------------------Showing Message from View after submission-------------
+used in contactForm2 class
+first import the message lib
+inside the class based view we want to show the message after the has passed the validation request.
+so inside form.valid() condtion after saving the form we want to show the message
+#### for class based view: messages.success(self.request,"Enter the message")
+then return as HttpresponseRedirect(reverse_lazy('appname:url_name'))
+##now to show the message inside fron-end: the context from views.py returns a object named messages. use it infor loop
+we can use message.tags if its a success,error,debug,info. these can be used inside views too.
+#### for function based views dont use self as argument for message.success('Pass just the messsage text')
+
+
+-----------------Showing
+
+
+
+
+------------------ Search Functionalities-----------------------
+The serach function is handled by fucntion based view.
+(create a form class where role='search' and add name="search" inside <input> html tag ) -> this is for basic.html
+create a new def searchView(request) #request since it is a post method.
+then get the values from serach box by query=request.POST.get('search','') -> here 'search' is the name field of html serach box
+then ***import from django.db.models import Q.
+then we check if there is any value inside query varr;
+then usage of Q : query_set= (Q(title__icontains=query)) | (Q(details__icontains=query))
+if there is any field of many2one or many2many relation then use (Q(Field__relatedModel__icontains=query))
+then we want to show only the posts we get by search keyword, so need to filter the object
+to do this result=Post.objects.filter(query_set)
+then pass the result as a context dict.
+
+
+-------------------------- Filter Functionalities----------------------------
+We use the Q lib for this.
+create a dropdown class in front-end and add a submit button at last inside of the dropdown class <div>
+For each field add name='html field name'
+now inside views.py get the inputed values
+
+
+-------------------------Django Authentication-------------
+
+Authentication will be handled by creaing a new app named session
+include the urls of this session app in the base app

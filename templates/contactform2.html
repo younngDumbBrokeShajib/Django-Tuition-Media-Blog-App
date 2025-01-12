@@ -1,0 +1,29 @@
+{% extends "basic.html" %}
+{% block body %}
+<h1 class="text-center"> Contact Please</h1>
+{% load crispy_forms_tags %}
+<div class="container">
+    <div class="col-md-6 offset-md-3">
+        <div class="container">
+<form method="post">
+    {% csrf_token %}
+   <!-- {{form.as_name_errors}}
+    {{form.name.label_tag}}
+    {{form.name | as_crispy_field}} -->
+    <!-- the form varr is returned from the contact2 views as context -->
+    {% for field in form %}
+
+    {{field| as_crispy_field}}
+
+    {% endfor %}
+
+
+      <button type="Submit">Submit</button>
+    </form>
+
+</div>
+    </div>
+</div>
+
+{% endblock body %}
+
