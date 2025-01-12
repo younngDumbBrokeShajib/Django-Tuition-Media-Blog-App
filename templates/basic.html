@@ -48,17 +48,29 @@
 
               <li class="nav-item">
                 <a class="nav-link" href="">{% now "h:i:A" %}</a>
-
               <li class="nav-item">
                 <a class="nav-link" href="">{% now "D jS F Y" %}</a>
-
-
-              <li class="nav-item">
+              {% if user.is_authenticated %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{user.username}}
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/session/logout">Logout</a></li>
+                  <li><a class="dropdown-item" href="/session/change-pass">Change Password</a></li>
+                </ul>
+              </li>
+              {% else %}
+                <li class="nav-item">
                 <a class="btn btn-primary" margin-left="3" href="/session/login" >login</a>
               </li>
               <li class="nav-item">
                 <a class="btn btn-primary ml-2" href="/session/logout" >logout</a>
               </li>
+              {% endif %}
+
+
+
 
             </ul>
             <form class="d-flex" method="post" action="/tuition/search/" role="search">
@@ -71,6 +83,13 @@
       </nav>
 
     {% block body %}
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
         
     {% endblock body %}
     <h1></h1>

@@ -267,5 +267,48 @@ now inside views.py get the inputed values
 
 -------------------------Django Authentication-------------
 
+-----------------LogIn()---------------
 Authentication will be handled by creaing a new app named session
 include the urls of this session app in the base app
+create new ulrs.py file for session app
+now first create a new view. Here import AuthenticationForm
+import login,logout,authenticate and django.contrib messages to show the error and success messages
+Here django provides dafault authentication form and function.Thats why it has been imported
+    1.Now like the import post and get methods check if thats Post method.
+    2.Then get create an object of AuthenticationForm(request,data=request.POST)
+    3. check if the form is valid. get the username and password saved in a variable using cleaned_data.get('username') and password
+    4.now use those varrs to authenticate. Use authenticate function(username,password)->importe earlier saved in another varr
+    5.check the is user(varr) is not None: use the login method-> imported earlier. and redirect to the homepage
+    6.if user not valied present in else block show error message. use the message package imported earlier
+    7.now in another else block for Get method create the form object of AuthenticationForm class
+    8. return render(request,templatename,{'form':form})
+#Note : Here in the session template folder a login template is created and crispy_form_tags are used.
+by default django provied these authenticate forms. Here we have sent the form as a context data from the views.
+the context data form object is created of AuthenticationForm class.
+to edit the forms style in the template see the earlier template on how to edit the forms styling.
+
+-------------------LogOut()---------------------------------------
+use the logout method imported earlier with (request) parameter
+then show the success message and then redirect or render
+#To show only logout button signIn use if user.is_authenticated in a if block.
+
+------------------ChangePassword(not forgotten)----------------------
+create a new template like the logUser
+creat a new url. and use the url in the nav-link dropdown.
+Views: 1. import ChangePasswordForm from "django.contrib.auth.forms"
+    2. Import update_session_auth_hash from django.contrib.auth
+    3. check if method=="POST"
+    4. create an object(form) of class ChangePasswordForm(data=request.POST,user=request.user)
+        here data and user need to be passed with request since its a post method.
+        post method always require (request.) to pass anything as arguments to create any object of any class
+        that is why after checking if thats a post method we pass the data and user with (request.)
+    5.check if form is valid(). then use the default method update_session_auth_has(request,user=form.user)
+        here for arguments use request, and since a form object is created so we use form.user not request.user
+    6. show the success message()
+    7. redirect()
+    8. Now if method is not post-> create an object of class ChangePasswordForm(user=request.user)
+        here first argument like the post method is not passed since its a get method no data will be passeed down
+        and request.user as the server will pass the requested user in the
+    9. call the update_session_auth_hash(request,user=request.user)
+    10. return render(to the creaeted form)
+

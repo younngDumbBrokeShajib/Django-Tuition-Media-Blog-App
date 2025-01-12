@@ -2,6 +2,13 @@
 {% block body %}
 <div class="container">
 <h1 class="text-center">My First Heading</h1>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 <p>My first paragraph.</p>
 {{msg1}}<br>
 {{msg2}}<br>
