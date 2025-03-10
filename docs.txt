@@ -354,3 +354,82 @@ exp: we can show all the subjects in front-end without using For loop by calling
             then create a new string having the first 5 words of the list. and return the newly created string.
 
 
+
+--------------------FOR Interview---------------------------
+
+#Using Filter-----
+to find customer who has ever ordered anything-> I can user filter and annotate all-togather
+first annotate then filter
+customers=Customer.objects.annotate(order_count=Count('order')).filter(order_count__gt=0)
+another way
+If you want to filter customers who have ever placed an order:
+customers_with_orders = Customer.objects.filter(order__isnull=False).distinct()
+
+
+1. Handling invalid input using post method and Forms and class/function based views
+define the form in forms.py and the model. Then in views.py creat an object of FormClass(request.POST)
+then if form.is_valid(): form.save() return JsonResponse({'message':"success message"},status=200)
+else JsonResponse({'error':form.errors},status=400)
+for class based view:
+class ProductCreateView(View):
+    def post(self, request, *args, **kwargs):
+        form = ProductForm(request.POST)  # Validate form data
+
+        if form.is_valid():
+            form.save()  # Save to database
+            return JsonResponse({'message': 'Product created successfully'}, status=200)
+        else:
+            return JsonResponse({'error': form.errors}, status=400)
+
+
+2.---------- Usage of When and Case along with Annotate-----------
+
+first find the sum of orders then use the Case and inside with use When , if the condition is true
+use then(Concat('field',Value(" VIP")) and save it in a varriable, also add default, and output_field=CharField()
+customers=Customer.objects.annotate(order_count=Count('order'),
+display_name=Case(
+when(order_count__gt=5, then(Concat('name',Value('VIP'))),
+default='name', #it is a model_field -> name
+output_field=CharField()
+)
+---------How to use When and Case like or and And operationn with Q() and except Q()
+add multiple When one after another to work as OR function
+add both conditions inside one single When(gt,exact) to work as And Operation
+
+customers = Customer.objects.annotate(
+    order_count=Count('order'),
+    display_name=Case(
+        When(Q(order_count__gt=5) | Q(name__startswith="J"), then=Value('VIP Customer')),
+        When(order_count__lt=3, then=Value('New Customer')),
+        default=Value('Regular Customer'),
+        output_field=CharField()
+    )
+)
+
+
+3------------ methods to use with annotate()------
+Aggregations	Count(), Sum(), Avg(), Max(), Min()
+Math & Arithmetic	F(), ExpressionWrapper()
+String Functions	Length(), Lower(), Upper(), Trim(), Concat()
+Date & Time	ExtractYear(), ExtractMonth(), ExtractDay(), TruncMonth()
+JSON (PostgreSQL)	KeyTextTransform()
+
+Operator	Usage in When()	Meaning
+__gt	order_count__gt=5	Greater than 5
+__gte	order_count__gte=5	Greater than or equal to 5
+__lt	order_count__lt=5	Less than 5
+__lte	order_count__lte=5	Less than or equal to 5
+__exact	order_count__exact=5	Exactly 5
+__iexact	name__iexact='john'	Case-insensitive exact match (John == john)
+__contains	name__contains='VIP'	Field contains a substring (case-sensitive)
+__icontains	name__icontains='vip'	Field contains a substring (case-insensitive)
+__in	order_count__in=[3, 5, 7]	Matches values in a list
+__isnull	order_count__isnull=True	Checks if the field is NULL
+__startswith	name__startswith='J'	Starts with 'J' (case-sensitive)
+__istartswith	name__istartswith='j'	Starts with 'j' (case-insensitive)
+__endswith	name__endswith='VIP'	Ends with 'VIP' (case-sensitive)
+__iendswith	name__iendswith='vip'	Ends with 'VIP' (case-insensitive)
+
+
+4------------- use
+
