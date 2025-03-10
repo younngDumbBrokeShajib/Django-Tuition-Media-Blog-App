@@ -7,7 +7,7 @@
 
     </div>
  <div class="col-md-8 offset-md-2"></div>
-Title: {{object.title}}<br>
+Title: {<!--{object.title}}-->{{object.make_title}}<br>
 
     <!-- addint the condition who can edit the post-->
 {% if author %}
@@ -19,10 +19,12 @@ Title: {{object.title}}<br>
 
 
 Author: {{object.user.username}} <br>
-Subject: {% for i in object.subject.all%} {{i.name}},{% endfor %} <br>
+Subject: <!--{% for i in object.subject.all%} {{i.name}},{% endfor %} -->
+    {{object.get_subject_list}}<br>
 Class: {% for i in object.class_in.all%} {{i.name}}({{i.section}}) {% endfor%} <br>
 Category: {{object.category}} <br>
 Medium: {{object.medium}}<br>
+    Details: {{object.details}}
     </div>
 </div>
 {% endblock body %}

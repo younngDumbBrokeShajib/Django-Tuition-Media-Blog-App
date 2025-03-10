@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from PIL import Image
 from django.utils.text import slugify
 
+
 # Create your models here.
 #here the return statement is used to show the actual name of the entry in the admin panel
 #self.name=name shows the name of the post in the admin panel
@@ -64,7 +65,8 @@ class Post(models.Model):
     title=models.CharField(max_length=200)
     slug=models.CharField(max_length=200)
     email=models.EmailField()
-    #2nd 
+    #2nd
+    
     salery=models.IntegerField() 
     details=models.TextField()
     available=models.BooleanField()
@@ -91,6 +93,21 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    #custom model methods
+    def get_subject_list(self):
+        subs=self.subject.all()
+        subjects=""
+        for i in subs:
+            subjects=subjects+str(i.name)+','
+        return subjects
+    def make_title(self):
+        title=self.title.title()
+        return title
+    def short_details(self):
+        detail=self.details.split(" ")
+        if len(detail)>5:
+            return " ".join(detail[:5])+"..."
+
 
 
 

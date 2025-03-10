@@ -45,7 +45,7 @@ def searchView(request):
 
 def filterView(request):
     if request.method=='POST':
-        #first get the data from the fron-end using html field name
+        #first get the data from the fron-end using html field name from postlist.html
         subjects = request.POST.get('subject', None)
         class_in = request.POST.get('class', None)
         avail = request.POST.get('availability', None)
@@ -91,7 +91,7 @@ class contact2(View): #import django.views
 # def contact(request):
 #     if request.method=='POST':
 #         form=contactForm(request.POST)
-#         #to save it from just a html field use request.POST['html_field_name']
+#         #to save it from  just a html field use request.POST['html_field_name']
 #
 #         #here if we remove the precedding coma after name=request.POST['name'] then we can create a perfect type of values
 #         if form.is_valid():
@@ -115,7 +115,7 @@ def postViews(request):
 def subjectView(request):
     #sub=Subject.objects.all() to get all the objects
     sub=Subject.objects.get(name="Maths") #to get the eexact object of having name=Maths
-    post=sub.Subjects_added.all()
+    post=sub.Subjects_added.all() #Subjects_added is the related name in Post Model
     return render(request,'tuition/subjectview.html',{'sub':sub,'post':post})
 
 #to use createView generic class import the view first
@@ -164,9 +164,9 @@ class PostListView(ListView): #immport list view package
     #query_set=Post.objects.filter(user=1)
     def get_context_data(self, *args, **kwargs):
         context=super().get_context_data(*args,**kwargs)
-        context['postlist']=context.get('object_list')
+        context['postlist']=context.get('object_list') #this renames the object_list into postlist to use in front end
         context['msg']='This is context message'
-        context['subjects']=Subject.objects.all()
+        context['subjects']=Subject.objects.all() #used in filter
         context['class_in']=Class_in.objects.all() #this is to send the subject objects in fron-end dropdown list
         return context
 
@@ -179,7 +179,7 @@ class PostDetailView(DetailView):
         post=self.get_object()
         print("Logged-in user:", self.request.user)
         print("Post author:", post.user)
-        context['author']=self.request.user == post.user
+        context['author']=self.request.user == post.user #acts as a boolean in fron-end to check if the user is authenticated
         return context
 class PostEditView(UpdateView):
     model=Post

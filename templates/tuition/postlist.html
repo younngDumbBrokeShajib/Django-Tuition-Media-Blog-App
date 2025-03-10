@@ -13,18 +13,16 @@
 
 <!-- filter options div -->
 
-
-
-
 <div class="container">
-
+<!-- filter options div -->
     <div class="col-md-6">
         <form action="/tuition/filter/" method="post">
             {% csrf_token %}
 
             <div class="input-group mb-3">
             <select class="custom-select" id="inputGroupSelect02" name="subject">
-             <option></option>
+             <option></option> <!-- this option empty tag is used for blank choose -->
+                <!-- the subject varr is passed from postlist view as context['subjects'] -->
             {% for i in subjects %}
             <option value="{{i}}">{{i}}</option>
             {% endfor %}
@@ -35,8 +33,8 @@
 </div>
 
  <div class="input-group mb-3">
-  <select class="custom-select" id="inputGroupSelect02" name="class">
-    <option></option>
+  <select class="custom-select" id="inputGroupSelect03" name="class">
+    <option></option> <!-- this option empty tag is used for blank choose -->
       {% for j in class_in %}
     <option value="{{j}}">{{j}}</option>
       {% endfor %}
@@ -71,14 +69,18 @@
 
     </div>
 
+    <!-- filter div END -->
+
 {{msg}} <br>
 {% for i in postlist %}
     <div class="col-md-6 offset-md-3 p-3 border">
-{{i.title}}
+<!--{{i.title}}--> {{i.make_title}}
         <br>
         by: {{i.user.username}}
         <br>
         <hr>
+        <!--{{i.details}}-->
+        {{i.short_details}}
         <a href="/tuition/detail/{{i.id}}"> See Details</a> <br>
 
 </div>

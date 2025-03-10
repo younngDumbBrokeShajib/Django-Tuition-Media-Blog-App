@@ -170,13 +170,22 @@ here we tend to redirect to the detail page from ListView page.So in listview.ht
 the detialView url name inside of the href tag and the primary key of the model.
 <a href="/tuition/detail/{{i.id}}" here detail is the url name of the detailview and id is the primary key for the posts
 #refer to the detial.html comments for more info.
+# detail view has a method get_context_data(). Inside this method a boolean check is done if the user is the same
+    as the author. and the result is saved in author varr.
+# so whenever the url is hit the detail_view also runs and checks if the author varr is true or not using author varr
+#then the user can click the edit and delete button. again if edit button is clicked then edit_views runs along with the url
+
 
 -------------------------Post Update View Class Based-------------
 a generic view so import the updateview
-specify the model name, template and form_class
-to get the exact post through posts id we need to pass the exact id to update that.
-to do this use the get_success_url method
-inside the method get the post id by self.object,id
+specify the model name, template and form_class this will be enough to create a update view. But to add extra features foloow the below
+get_success_url()-> used to redirect to the page after updateview's work is done
+get_context_data()-> used to work on data available in the model. Here data for single post is used like author. follow below
+1. first get the exact object/post.
+2. to do this use the get_context_data method. Inside method get the object by post=self.get_object().This is will give the exact object
+3. then pass the id along with kwargs using reverse_lazy.('tuition:detial',kwargs={'pk':id}). this is done after the work for post update is done
+4. here in kwargs pk is used in url inside urls.py. pk=primary_key
+    inside the method get the post id by self.object,id
 then pass the id as a dict varr named kwargs within return reverse_lazy as key='pk' and value=id
 so now view is done add a url and add a button to edit the post through form
 ###### ERROR/Bug solving#############
@@ -221,7 +230,7 @@ NOT Inside the Meta class but inside the form class a method can be created.
 the method name should follow contrains like :
 ############### def clean_mode_field_name(self): ################
 
-inside the method use the self.claened_data.get('model_field_name'). then save it in a varr
+inside the method use the self.cleaned_data.get('model_field_name'). then save it in a varr
 then use the varr in varuious operation.
 #####showing ERROR while handling data has been submitted.
 use the saved value in a varr to split and call raise forms.ValidationError('Name cannot be more than 3 words')
@@ -263,6 +272,11 @@ We use the Q lib for this.
 create a dropdown class in front-end and add a submit button at last inside of the dropdown class <div>
 For each field add name='html field name'
 now inside views.py get the inputed values
+For filter at first pass all the subjects and classes through listView() using context['subjects'] and ['class_in'] this is done in ListView method()
+then in the postlist.html using the contxt varr create a dropdown also add name for each html field.
+then add a submit button. Then create another view for filter.
+Using the post method USE (Q) queryset and then filter with post.objects.filter(queryset).distinct()
+same goes for salary and avilability. ##### Do check how to filter salary range.
 
 
 -------------------------Django Authentication-------------
@@ -275,11 +289,11 @@ now first create a new view. Here import AuthenticationForm
 import login,logout,authenticate and django.contrib messages to show the error and success messages
 Here django provides dafault authentication form and function.Thats why it has been imported
     1.Now like the import post and get methods check if thats Post method.
-    2.Then get create an object of AuthenticationForm(request,data=request.POST)
+    2.Then create an object of AuthenticationForm(request,data=request.POST)
     3. check if the form is valid. get the username and password saved in a variable using cleaned_data.get('username') and password
     4.now use those varrs to authenticate. Use authenticate function(username,password)->importe earlier saved in another varr
     5.check the is user(varr) is not None: use the login method-> imported earlier. and redirect to the homepage
-    6.if user not valied present in else block show error message. use the message package imported earlier
+    6.if user not valid present in else block show error message. use the message package imported earlier
     7.now in another else block for Get method create the form object of AuthenticationForm class
     8. return render(request,templatename,{'form':form})
 #Note : Here in the session template folder a login template is created and crispy_form_tags are used.
@@ -293,8 +307,8 @@ then show the success message and then redirect or render
 #To show only logout button signIn use if user.is_authenticated in a if block.
 
 ------------------ChangePassword(not forgotten)----------------------
-create a new template like the logUser
-creat a new url. and use the url in the nav-link dropdown.
+create a new template like the logInUser
+create a new url. and use the url in the nav-link dropdown.
 Views: 1. import ChangePasswordForm from "django.contrib.auth.forms"
     2. Import update_session_auth_hash from django.contrib.auth
     3. check if method=="POST"
@@ -311,4 +325,32 @@ Views: 1. import ChangePasswordForm from "django.contrib.auth.forms"
         and request.user as the server will pass the requested user in the
     9. call the update_session_auth_hash(request,user=request.user)
     10. return render(to the creaeted form)
+Note: here the method update_auth_user_hash only prevents the system to getting loged Out after password is changed
+after ChangePasswordForm(data=request.POST,user=request.user) we need to save the form form.save()
+then it will save the new password in the user database.
+
+------------------------ User Profile Creation------------------
+
+1. A User Model is created
+2.Need to add a User that is created or Registered to the UserModel. For this use OneToOneField(User,on_delete=Models.Cascade)
+3.since we are using the Model Form. So inside forms user selection is excluded will be added through views.
+4. # adding User to the UserModel-> here first create an object of the Form Class but user field has not been assigned
+    So after creating the object assing the user as object.user= request.user. and then save the form with the values
+5. Get to know more about instance and how to add them
+
+
+_----------------------------Custom Model Methods-----------------
+These are the methods to perform actions or operations in Model Fields.
+It is done in models.py through method
+Usage: we can call the methods instead of using for loop over the objects that are passed from views.py through context varr
+exp: we can show all the subjects in front-end without using For loop by calling the methods instead
+    problem 1: in the detail view while showing the selected Subjects there is a space after coma and an extra coma after the
+        the subject. to remove this we can use the custom model method.
+        thats a easy code look at the Post Model. and in front end call the function
+    problem 2:Making first letter of each work in titile captal. For this get the title of each post first
+            then use the python method title() to make it done. have done it for both list and detail page
+            there are many other functions in python like upper(), lower().
+    problem 3: showing only first 5 words in post list view. get the details data then use split(this gives as list) and check if that greater than 5
+            then create a new string having the first 5 words of the list. and return the newly created string.
+
 
