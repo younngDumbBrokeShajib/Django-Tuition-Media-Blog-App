@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import Form
 
-from .models import Contact,Post
+from .models import Contact,Post,Class_in
 
 
 class contactForm(forms.Form):
@@ -51,3 +51,7 @@ class PostForm(forms.ModelForm):
             )
         }
 
+class ClassAddForm(forms.ModelForm):
+    class Meta:
+        model=Class_in
+        fields='__all__'

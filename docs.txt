@@ -337,13 +337,19 @@ then it will save the new password in the user database.
 4. # adding User to the UserModel-> here first create an object of the Form Class but user field has not been assigned
     So after creating the object assing the user as object.user= request.user. and then save the form with the values
 5. Get to know more about instance and how to add them
-
+6. In the userProfileForm(forms.ModelForm) to change the input type and the label do this before Class Meta:
+class UserProfile(forms.ModelForm):
+    bdate=forms.DateField(
+    label='Birth Date',
+    widget=forms.TextInput(
+        attrs={'type':'date'}
+    )) here "bdate" is the model field name. use widget and attrs
 
 _----------------------------Custom Model Methods-----------------
 These are the methods to perform actions or operations in Model Fields.
 It is done in models.py through method
 Usage: we can call the methods instead of using for loop over the objects that are passed from views.py through context varr
-exp: we can show all the subjects in front-end without using For loop by calling the methods instead
+exp: we can show all the subjects in front-end without using For loop by calling the methods instead as -> object
     problem 1: in the detail view while showing the selected Subjects there is a space after coma and an extra coma after the
         the subject. to remove this we can use the custom model method.
         thats a easy code look at the Post Model. and in front end call the function
@@ -365,8 +371,21 @@ another way
 If you want to filter customers who have ever placed an order:
 customers_with_orders = Customer.objects.filter(order__isnull=False).distinct()
 
+-------Bulk Update using filter and Update()
+from orders.models import Order  # Assuming your model is named 'Order' and is inside the 'orders' app
 
-1. Handling invalid input using post method and Forms and class/function based views
+# Update all orders with status 'pending' to 'shipped'
+Order.objects.filter(status='pending').update(status='shipped')
+
+#Update an field for an specific order id:
+create an url with <int:order_id>/
+then in function based view with parameter(request,order_id): check if request-> post, get object-> order=get_object_or_404(order=order_id)
+order.status='pending'
+order.save() and then Return JsonResponse()
+
+
+
+1. ----------------Handling invalid input using post method and Forms and class/function based views
 define the form in forms.py and the model. Then in views.py creat an object of FormClass(request.POST)
 then if form.is_valid(): form.save() return JsonResponse({'message':"success message"},status=200)
 else JsonResponse({'error':form.errors},status=400)
@@ -406,6 +425,10 @@ customers = Customer.objects.annotate(
     )
 )
 
+-----using AND OR operation using filter()--------
+Post.objects.filter(salary__lte=2000).filter(salary__gte=800) here by using (.) between and Operation is performed
+
+
 
 3------------ methods to use with annotate()------
 Aggregations	Count(), Sum(), Avg(), Max(), Min()
@@ -429,7 +452,10 @@ __startswith	name__startswith='J'	Starts with 'J' (case-sensitive)
 __istartswith	name__istartswith='j'	Starts with 'j' (case-insensitive)
 __endswith	name__endswith='VIP'	Ends with 'VIP' (case-sensitive)
 __iendswith	name__iendswith='vip'	Ends with 'VIP' (case-insensitive)
+__exclude post.objects.exclude(name__exact='string-any')
+
+these can be used with filter method also. then after filtering to count all the objects use .count()
 
 
-4------------- use
+4------------- Usage
 

@@ -43,7 +43,7 @@ class Class_in(models.Model):
     section=models.CharField(max_length=5,default="A")
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.section}"
 
 
 class Post(models.Model):

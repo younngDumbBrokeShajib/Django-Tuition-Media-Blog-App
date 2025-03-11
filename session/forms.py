@@ -10,13 +10,15 @@ class RegistrationForm(UserCreationForm):
         model=User
         fields=('username','email','first_name','last_name')
 class UserProfile(forms.ModelForm):
-    bdate=forms.DateField(widget=forms.TextInput(
+    bdate=forms.DateField(
+        label='Birth Date',
+        widget=forms.TextInput(
         attrs={'type':'date'}
     ))
     class Meta:
         model=UserModel
         #fields='__all__'
         exclude=('user',)
-        label={
+        labels={
             'bdate':'Birth Date',
         }

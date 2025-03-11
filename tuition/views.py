@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from .models import Contact,Post,Subject,Class_in
-from .forms import contactForm,PostForm,contactForm2
+from .forms import contactForm,PostForm,contactForm2,ClassAddForm
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic import DetailView,UpdateView,DeleteView
@@ -28,7 +28,6 @@ from django.db.models import Q
 
 
 def searchView(request):
-
     query=request.POST.get('search','')
     if query:
         query_set=(Q(title__icontains=query)) | (Q(details__icontains=query)) | (Q(medium__icontains=query)) | (Q(subject__name__icontains=query))
@@ -107,10 +106,29 @@ class contact2(View): #import django.views
 #         form=contactForm()
 #     return render(request,'contact.html',{'form':form})
 
+
+
+
 def postViews(request):
     post=Post.objects.all()
     
     return render(request,'tuition/postview.html',{'post':post})
+
+class ClassAddView(View):
+    form_name=ClassAddForm
+    template_name='tuition/classadd.html'
+
+    def post(self,request,*args,**kwargs):
+        form=self.form_name(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, "Form Successfully Saved")
+            return HttpResponseRedirect(reverse_lazy('tuition:postlist'))
+        return render(request, 'tuition/classadd.html', {'form': form})
+    def get(self,request):
+        form=self.form_name()
+        return render(request,'tuition/classadd.html',{'form':form})
+
 
 def subjectView(request):
     #sub=Subject.objects.all() to get all the objects

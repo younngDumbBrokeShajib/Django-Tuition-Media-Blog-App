@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import postViews,postCreate,subjectView,contact2,PostListView,PostDetailView,PostEditView,PostDeleteView
-from .views import searchView,filterView
+from .views import searchView,filterView,ClassAddView
 from .forms import contactForm2
 #from .views import contact
 from django.contrib.auth.views import LoginView
@@ -21,6 +21,7 @@ urlpatterns = [
     path('detail/<int:pk>',PostDetailView.as_view(),name='detail'),
     path('edit/<int:pk>',PostEditView.as_view(),name='editpost'),
     path('delete/<int:pk>',PostDeleteView.as_view(),name='delete'),
+    path('class-add/',ClassAddView.as_view(),name='class-add'),
 
 
 ]
