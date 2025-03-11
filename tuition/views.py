@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-from .models import Contact,Post,Subject,Class_in
+from .models import Contact,Post,Subject,Class_in,User
 from .forms import contactForm,PostForm,contactForm2,ClassAddForm
 from django.views import View
 from django.views.generic import ListView
@@ -13,6 +13,8 @@ from django.views.generic import DetailView,UpdateView,DeleteView
 from django.views.generic import CreateView
 from django.contrib import messages
 from django.db.models import Q
+
+from session.models import UserModel
 
 # Create your views here.
 #----------------part 11--------------------
@@ -219,4 +221,7 @@ class PostDeleteView(DeleteView):
     template_name = 'tuition/delete.html'
     success_url = reverse_lazy('tuition:postlist')
 
-
+def get_vipView(request):
+    vip=UserModel.vip_author.get_vip_cus()
+    for user in vip:
+        print(user)

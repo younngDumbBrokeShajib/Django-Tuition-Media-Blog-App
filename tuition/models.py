@@ -25,6 +25,10 @@ from django.utils.text import slugify
 #add the pakkage to the installed apps from settings.py
 #also import the in the models.py file
 
+from django.db.models import Count
+
+
+
 class Contact(models.Model):
     name=models.CharField(max_length=100)
     phone=models.CharField(max_length=17)
@@ -37,6 +41,11 @@ class Subject(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_post_count(self):
+        number=self.Subjects_added.all().count()
+        print(number)
+        return number
 
 class Class_in(models.Model):
     name=models.CharField(max_length=100)
@@ -100,6 +109,8 @@ class Post(models.Model):
         for i in subs:
             subjects=subjects+str(i.name)+','
         return subjects
+
+
     def make_title(self):
         title=self.title.title()
         return title

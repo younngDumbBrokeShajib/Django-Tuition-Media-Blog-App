@@ -360,6 +360,46 @@ exp: we can show all the subjects in front-end without using For loop by calling
             then create a new string having the first 5 words of the list. and return the newly created string.
 
 
+-------------------Model Manager-------------------------
+creat a clas inside model file.
+creat a def where we use the annotate and filter options.
+then create an object of this customManager class inside Model Class with a varriable.
+for default manager use objects=models.Manager() this is for default use
+vip_customer=VipCustomManager() ### make sure to do this on the model class must
+then in views-> to use this def of the class
+vip_customer=Customer.objects.get_vip_customer()
+
+####  if I want to check if the loged in user is vip
+def user_profile(request):
+    user = request.user  # Get the logged-in user
+    is_vip = UserModel.objects.vip_users().filter(user=user).exists()  # Check if VIP
+    return render(request, 'tuition/profile.html', {'user': user, 'is_vip': is_vip})
+ also create a url
+
+### if I want to send a user id then check if that a Vip user:
+def check_vip_user(request, user_id):
+    user = get_object_or_404(UserModel, user__id=user_id)  # Fetch user by ID
+    is_vip = UserModel.objects.vip_users().filter(user__id=user_id).exists()  # Check if VIP
+
+    return render(request, 'tuition/check_vip.html', {'user': user, 'is_vip': is_vip})
+    also create an url ('path/<int:user_id>')
+
+##----- To convert the returned objects into dictionary / List of dict
+it is generally done in views.py
+use .values('key1','key2') after calling the CustomerModelManagerMethod()
+ vip_users = UserModel.vip_author.get_vip_cus().values('id', 'user__username')
+
+ for full data of the objects use model_to_dict(model)
+ vip_dicts=[mode_to_dict(user) for user in vip_users] this will give all the columns of the UserModel
+
+
+
+
+
+
+
+
+
 
 --------------------FOR Interview---------------------------
 

@@ -1,9 +1,16 @@
 from django.db import models
+from django.db.models import Count
 from django.contrib.auth.models import User
 from PIL import Image
 
+
+
 # Create your models here.
 
+
+class CustomModelManager(models.Manager):
+    def get_vip_cus(self):
+        return self.annotate(post_count=Count('user__post')).filter(post_count__gt=3)
 class UserModel(models.Model):
     gender=(
         ('Male','Male'),
@@ -37,6 +44,7 @@ class UserModel(models.Model):
     religion=models.CharField(max_length=50,choices=religion_choice)
     profile_pic=models.ImageField(default='default.jpg',upload_to='media/images')
 
+    vip_author=CustomModelManager()
     def __str__(self):
         return f'{self.user.username} Profile'
     def save(self):
